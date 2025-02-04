@@ -1,0 +1,265 @@
+# Companies
+POST /companies/register
+Request:
+{
+  "name": "Test Company",
+  "email": "test@company.com", 
+  "password": "password123",
+  "industry": "technology"
+}
+Response 201:
+{
+  "id": "uuid-1234",
+  "name": "Test Company",
+  "email": "test@company.com",
+  "industry": "technology",
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+
+GET /companies/verify/{verification_token}
+Response 200:
+{
+  "message": "Email verified successfully"
+}
+
+GET /companies/profile
+Authorization: Bearer {jwt_token}
+Response 200:
+{
+  "id": "uuid-1234",
+  "name": "Test Company",
+  "email": "test@company.com",
+  "industry": "technology",
+  "createdAt": "2024-01-01T00:00:00Z",
+  "subscription": {
+    "type": "FREE",
+    "expiresAt": "2024-02-01T00:00:00Z"
+  }
+}
+
+PATCH /companies/profile
+Authorization: Bearer {jwt_token}
+Request:
+{
+  "name": "Updated Company Name",
+  "industry": "healthcare"
+}
+Response 200:
+{
+  "id": "uuid-1234",
+  "name": "Updated Company Name",
+  "industry": "healthcare",
+  "email": "test@company.com",
+  "updatedAt": "2024-01-01T00:00:00Z"
+}
+
+# Authentication
+POST /auth/login
+Request:
+{
+  "email": "test@company.com",
+  "password": "password123",
+  "type": "company"
+}
+Response 200:
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+
+POST /auth/employee/login
+Request:
+{
+  "email": "employee@company.com",
+  "password": "password123"
+}
+Response 200:
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+
+# Files
+POST /files/upload
+Authorization: Bearer {jwt_token}
+Content-Type: multipart/form-data
+Request:
+{
+  "file": <file_upload>,
+  "description": "Test file upload"
+}
+Response 201:
+{
+  "id": "file-uuid-1",
+  "filename": "test.xlsx",
+  "description": "Test file upload",
+  "size": 1024,
+  "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "isPublic": false,
+  "uploadedAt": "2024-01-01T00:00:00Z"
+}
+
+GET /files
+Authorization: Bearer {jwt_token}
+Response 200:
+{
+  "files": [
+    {
+      "id": "file-uuid-1",
+      "filename": "test.xlsx",
+      "description": "Test file upload",
+      "size": 1024,
+      "isPublic": false,
+      "uploadedAt": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "total": 1
+}
+
+GET /files/{fileId}
+Authorization: Bearer {jwt_token}
+Response 200:
+{
+  "id": "file-uuid-1",
+  "filename": "test.xlsx",
+  "description": "Test file upload",
+  "size": 1024,
+  "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "isPublic": false,
+  "uploadedAt": "2024-01-01T00:00:00Z",
+  "allowedEmployees": ["employee-id-1"]
+}
+
+PATCH /files/{fileId}/access
+Authorization: Bearer {jwt_token}
+Request:
+{
+  "isPublic": true
+}
+Response 200:
+{
+  "id": "file-uuid-1",
+  "isPublic": true,
+  "updatedAt": "2024-01-01T00:00:00Z"
+}
+
+POST /files/{fileId}/share
+Authorization: Bearer {jwt_token}
+Request:
+{
+  "employeeIds": ["employee-id-1", "employee-id-2"]
+}
+Response 200:
+{
+  "id": "file-uuid-1",
+  "sharedWith": ["employee-id-1", "employee-id-2"],
+  "updatedAt": "2024-01-01T00:00:00Z"
+}
+
+DELETE /files/{fileId}
+Authorization: Bearer {jwt_token}
+Response 204
+
+# Subscriptions
+GET /subscriptions/current
+Authorization: Bearer {jwt_token}
+Response 200:
+{
+  "type": "BASIC",
+  "startDate": "2024-01-01T00:00:00Z",
+  "expiryDate": "2024-02-01T00:00:00Z",
+  "features": {
+    "maxFiles": 100,
+    "maxUsers": 10,
+    "maxFileSize": 15728640
+  }
+}
+
+GET /subscriptions/usage
+Authorization: Bearer {jwt_token}
+Response 200:
+{
+  "storage": {
+    "used": 1048576,
+    "total": 5242880,
+    "percentage": 20
+  },
+  "files": {
+    "count": 5,
+    "max": 100,
+    "percentage": 5
+  },
+  "employees": {
+    "count": 3,
+    "max": 10,
+    "percentage": 30
+  }
+}
+
+POST /subscriptions/change-plan
+Authorization: Bearer {jwt_token}
+Request:
+{
+  "type": "PREMIUM"
+}
+Response 200:
+{
+  "type": "PREMIUM",
+  "startDate": "2024-01-01T00:00:00Z",
+  "expiryDate": "2024-02-01T00:00:00Z",
+  "features": {
+    "maxFiles": 1000,
+    "maxUsers": 25,
+    "maxFileSize": 52428800
+  }
+}
+
+# Employees
+POST /employees
+Authorization: Bearer {jwt_token}
+Request:
+{
+  "email": "employee@company.com",
+  "name": "Test Employee"
+}
+Response 201:
+{
+  "id": "employee-id-1",
+  "email": "employee@company.com",
+  "name": "Test Employee",
+  "role": "EMPLOYEE",
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+
+GET /employees
+Authorization: Bearer {jwt_token}
+Response 200:
+{
+  "employees": [
+    {
+      "id": "employee-id-1",
+      "email": "employee@company.com",
+      "name": "Test Employee",
+      "role": "EMPLOYEE",
+      "createdAt": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "total": 1
+}
+
+GET /employees/{employeeId}
+Authorization: Bearer {jwt_token}
+Response 200:
+{
+  "id": "employee-id-1",
+  "email": "employee@company.com",
+  "name": "Test Employee",
+  "role": "EMPLOYEE",
+  "createdAt": "2024-01-01T00:00:00Z"
+}
+
+DELETE /employees/{employeeId}
+Authorization: Bearer {jwt_token}
+Response 204

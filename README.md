@@ -1,85 +1,273 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# SaaS File Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A scalable SaaS solution for company file management with subscription-based features. This system allows companies to manage their files with role-based access control and subscription-based limitations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+### 🏢 Company Management
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Company registration and authentication
+- Employee management with role-based access (ADMIN, MANAGER, EMPLOYEE)
+- Secure JWT authentication
+- Company profile management
+- Industry-specific categorization
 
-## Project setup
+### 📁 File Management
+
+- Upload and manage CSV, XLS, XLSX files
+- File sharing controls with granular permissions
+- Public/private file access within company
+- Selective employee access
+- File size limits based on subscription
+- Secure file storage and retrieval
+
+### 💳 Subscription Plans
+
+- **FREE**: Basic features, limited storage
+- **BASIC**: Increased limits, additional features
+- **PREMIUM**: Maximum storage, unlimited features
+- Usage tracking and billing
+- Overage calculations
+- Plan upgrade/downgrade capabilities
+
+## Tech Stack
+
+- **Backend**: NestJS (A progressive Node.js framework)
+- **Database**: MySQL with TypeORM for elegant data management
+- **Authentication**: JWT (JSON Web Tokens) for secure authentication
+- **File Storage**: Local storage with structured organization
+- **API Documentation**: Swagger/OpenAPI for interactive documentation
+- **Validation**: Class-validator for DTO validation
+- **Security**: bcrypt for password hashing
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14+)
+- MySQL (v5.7+)
+- npm/yarn
+- Git
+
+### Installation
+
+1. Clone the repository
 
 ```bash
-$ npm install
+git clone https://github.com/yourusername/your-repo.git
+
+npm install
+
+
+cp .env.example .env
 ```
 
-## Compile and run the project
+2. Configure environment variables
 
 ```bash
-# development
-$ npm run start
+npm run migration:run
 
-# watch mode
-$ npm run start:dev
+npm run start:dev
 
-# production mode
-$ npm run start:prod
+
+### Environment Variables
+Database Configuration
+DB_HOST=localhost
+DB_PORT=3000
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_DATABASE=your_database
+JWT Configuration
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRATION=24h
+Application
+PORT=3000
 ```
 
-## Run tests
+## API Documentation
+
+Visit `http://localhost:3000/docs` for interactive Swagger documentation.
+
+### Authentication
+
+```http
+# Company Login
+POST /api/auth/company/login
+{
+    "email": "admin@company.com",
+    "password": "password123"
+}
+
+# Employee Login
+POST /api/auth/employee/login
+{
+    "email": "employee@company.com",
+    "password": "password123"
+}
+```
+
+### Companies
+
+```http
+# Register Company
+POST /api/companies/register
+{
+    "name": "Acme Corp",
+    "email": "admin@acme.com",
+    "password": "password123",
+    "industry": "TECHNOLOGY"
+}
+
+# Get Profile
+GET /api/companies/profile
+Authorization: Bearer {token}
+```
+
+### Employees
+
+```http
+# Create Employee
+POST /api/employees
+Authorization: Bearer {token}
+{
+    "email": "john@company.com",
+    "name": "John Doe",
+    "role": "MANAGER"
+}
+
+# List Employees
+GET /api/employees
+Authorization: Bearer {token}
+```
+
+### Files
+
+```http
+# Upload File
+POST /api/files/upload
+Authorization: Bearer {token}
+Form-data:
+- file: (your_file.xlsx)
+- isPublicInCompany: true
+
+# Update Access
+PATCH /api/files/{id}/access
+Authorization: Bearer {token}
+{
+    "isPublicInCompany": false,
+    "allowedEmployeeIds": ["uuid1", "uuid2"]
+}
+```
+
+### Subscriptions
+
+```http
+# Get Current Plan
+GET /api/subscriptions/current
+Authorization: Bearer {token}
+
+# Change Plan
+POST /api/subscriptions/change-plan
+Authorization: Bearer {token}
+{
+    "type": "PREMIUM"
+}
+
+# Get Billing
+GET /api/subscriptions/billing
+Authorization: Bearer {token}
+```
+
+## Subscription Plans
+
+### FREE
+
+- 10 files limit
+- 5 users maximum
+- 5MB per file
+- No additional charges
+- Basic file sharing
+
+### BASIC ($10/month)
+
+- 100 files
+- 10 users
+- 15MB per file
+- $0.5 per additional file
+- $5 per additional user
+- Advanced file sharing
+
+### PREMIUM ($25/month)
+
+- 1000 files
+- 25 users
+- 50MB per file
+- $0.25 per additional file
+- $3 per additional user
+- All features included
+
+## Development
+
+### Database Migrations
 
 ```bash
-# unit tests
-$ npm run test
+# Generate migration
+npm run migration:generate src/migrations/[MigrationName]
 
-# e2e tests
-$ npm run test:e2e
+# Run migrations
+npm run migration:run
 
-# test coverage
-$ npm run test:cov
+# Revert migration
+npm run migration:revert
 ```
 
-## Resources
+## Project Structure
 
-Check out a few resources that may come in handy when working with NestJS:
+```
+src/
+├── auth/           # Authentication and authorization
+├── companies/      # Company management and profiles
+├── employees/      # Employee management and roles
+├── files/         # File operations and sharing
+├── subscriptions/ # Subscription and billing
+├── config/        # Application configuration
+└── migrations/    # Database migrations
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Security Features
 
-## Support
+- JWT-based authentication with expiration
+- Role-based access control (RBAC)
+- File access permissions with granular control
+- Password hashing using bcrypt
+- Company data isolation
+- Request validation
+- Rate limiting
+- XSS protection
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Error Handling
 
-## Stay in touch
+- Detailed error messages for debugging
+- Input validation using class-validator
+- Business logic validation
+- File size and type validation
+- Subscription limit checks
+- Graceful error responses
+- Error logging
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Future Improvements
+
+1. Add file compression for storage optimization
+2. Implement cloud storage (AWS S3/Google Cloud Storage)
+3. Add payment processing integration
+4. Email notifications for important events
+5. Activity logging and audit trails
+6. Advanced search functionality
+7. File preview capabilities
+8. Batch operations for files
+9. Enhanced analytics and reporting
+10. Two-factor authentication
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+MIT License - Feel free to use this project for your own purposes.
